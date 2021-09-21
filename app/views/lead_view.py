@@ -11,23 +11,20 @@ def create():
 
 
 @bp.get("/lead")
-def create():
+def get_all():
 
     return jsonify('ẗeste get'), 200
 
 
 @bp.patch("/lead")
-def create():
+def update():
 
     return jsonify('ẗeste patch'), 200
 
-@bp.delte("/lead")
-def create():
+@bp.delete("/lead")
+def delete_one():
 
     return jsonify('ẗeste patch'), 200
-
-
-
 
 
 @bp.get("/")

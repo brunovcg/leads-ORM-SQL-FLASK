@@ -22,4 +22,4 @@ class LeadModel(db.Model):
     phone = Column(String, nullable=False, unique=True)
     creation_date = Column(DateTime, nullable=True)
     last_visit = Column(DateTime, nullable=True)
-    visits = Column(Integer, nullable=True, Default = 1)
+    visits = Column(Integer, nullable=True, default = 1)
