@@ -38,7 +38,6 @@ def create():
 @bp.get("/lead")
 def get_all():
 
-
     query = LeadModel.query.order_by(desc('visits'))
 
     lead_list = [
@@ -50,18 +49,88 @@ def get_all():
             for card in query
     ]
 
+    if lead_list == []:
+        return {"Error" : "No data in DATABASE"}, 404
+
     return jsonify(lead_list), 200
 
 
 @bp.patch("/lead")
 def update():
 
-    return jsonify('ẗeste patch'), 200
+    data = request.get_json()
+
+    try:
+        data["email"]
+        if len(data) != 1:
+            return {"error" : "there more entries than necessary, you only need 'email' in request"}, 400
+    except KeyError:
+        return {"error" : "there is no 'email' in request"}, 400
+
+
+    if type(data['email']) != str:
+        return {"Error" : "Email must be a String"}, 400
+
+    checkDatabaseEmpty = LeadModel.query.all()
+
+    if checkDatabaseEmpty  == []:
+        return {"Error" : "No data in DATABASE"}, 404
+
+
+    lead = LeadModel()
+
+    query = lead.query.filter_by(email = data['email']).first()
+
+    if not query:
+        return {"error" : "this email is not in DATABASE"}, 404
+
+
+    new_data = {"visits" : (query.visits + 1), "last_visit" : datetime.today()}
+
+    for key, value in new_data.items():
+        setattr(query, key, value)
+
+    current_app.db.session.add(query)
+    current_app.db.session.commit()
+
+    return "", 200
+
+
 
 @bp.delete("/lead")
 def delete_one():
 
-    return jsonify('ẗeste patch'), 200
+    data = request.get_json()
+
+    try:
+        data["email"]
+        if len(data) != 1:
+            return {"error" : "there more entries than necessary, you only need 'email' in request"}, 400
+    except KeyError:
+        return {"error" : "there is no 'email' in request"}, 400
+
+
+    if type(data['email']) != str:
+        return {"Error" : "Email must be a String"}, 400
+
+    checkDatabaseEmpty = LeadModel.query.all()
+
+    if checkDatabaseEmpty  == []:
+        return {"Error" : "No data in DATABASE"}, 404
+
+    lead = LeadModel()
+
+    query = lead.query.filter_by(email = data['email']).first()
+
+    if not query:
+        return {"error" : "this email is not in DATABASE"}, 404
+
+
+    current_app.db.session.delete(query)
+    current_app.db.session.commit()
+
+
+    return "", 204
 
 
 @bp.get("/")
