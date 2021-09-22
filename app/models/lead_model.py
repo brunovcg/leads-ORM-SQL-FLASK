@@ -1,5 +1,8 @@
 from sqlalchemy import Column, String, DateTime, Integer
 from dataclasses import dataclass
+import re
+
+from sqlalchemy.sql.expression import true
 
 from app.configs.database import db
 
@@ -23,3 +26,17 @@ class LeadModel(db.Model):
     creation_date = Column(DateTime, nullable=True)
     last_visit = Column(DateTime, nullable=True)
     visits = Column(Integer, nullable=True, default = 1)
+
+    @staticmethod
+    def isPhoneFormated(phone):
+
+        patern = r"^\([0-9]{2}\)[0-9]{5}\-[0-9]{4}$"
+
+        print(f'5>>>>>>>>>>> {type(re.fullmatch(patern, phone, flags=0)) == None }')
+
+        if re.fullmatch(patern, phone, flags=0):
+            return True
+       
+
+
+
