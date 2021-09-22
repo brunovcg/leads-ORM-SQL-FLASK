@@ -2,6 +2,7 @@ from flask import Blueprint, request, current_app, jsonify
 from app.models.lead_model import LeadModel
 from datetime import datetime
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import desc
 
 
 bp = Blueprint("lead", __name__)
@@ -20,10 +21,8 @@ def create():
         visits = 1
     )
    
-
     if not LeadModel.isPhoneFormated(data["phone"]):
         return {"Error" : "Phone must have '(xx)xxxxx-xxxx' format"}, 400
-    
   
     try:
         session = current_app.db.session
@@ -39,7 +38,19 @@ def create():
 @bp.get("/lead")
 def get_all():
 
-    return jsonify('ẗeste get'), 200
+
+    query = LeadModel.query.order_by(desc('visits'))
+
+    lead_list = [
+            {"id": card.id, "name": card.name, "name": card.name,
+             "email" : card.email, "phone" : card.phone, 
+             "creation_date" : card.creation_date, "last_visit" : card.last_visit,
+             "visits" : card.visits
+             }
+            for card in query
+    ]
+
+    return jsonify(lead_list), 200
 
 
 @bp.patch("/lead")
